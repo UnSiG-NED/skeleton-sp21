@@ -25,6 +25,9 @@ public class Model extends Observable {
 
     /** Largest piece value. */
     public static final int MAX_PIECE = 2048;
+    /** For finding adjacent tiles */
+    private static final int[][] DIRECTION_N_S_E_W
+            = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
     /** A new 2048 game on a board of size SIZE with no pieces
      *  and score 0. */
@@ -154,6 +157,11 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        for (Tile tile : b) {
+            if (tile != null && tile.value() == MAX_PIECE) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -165,6 +173,31 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+        return emptySpaceExists(b) || atLeastTwoAdjacentSameTiles(b);
+
+//        return false;
+    }
+
+    private static boolean atLeastTwoAdjacentSameTiles(Board b){
+        // Can I use the notion of Union-Find?
+        for (Tile tile : b){
+            if (tile == null) {
+                continue;
+            }
+
+            for (int[] direction : DIRECTION_N_S_E_W) {
+                // "c' for "changed"
+                int cx = tile.row() + direction[0];
+                int cy = tile.col() + direction[1];
+
+                if (cx >= 0 && cx < b.size())
+                    if (cy >= 0 && cy < b.size())
+                        if (b.tile(cx, cy) != null && b.tile(cx, cy).value() == tile.value()) {
+                            return true;
+                        }
+            }
+        }
+
         return false;
     }
 
